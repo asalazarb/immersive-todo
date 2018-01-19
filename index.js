@@ -1,24 +1,40 @@
 var yo = require('yo-yo')
+// import external modules
+import html from 'yo-yo'
+import EventEmitter from 'events'
+import reducer from './reducer'
+
+const state = {
+    tasks : [], // start empty 
+    done : []
+}
  
-var tasks = [] // start empty 
-var done = []
-var el = list(tasks, done, update)
-var taskInput = 'taskInput'
+const bus = new EventEmitter
+bus.on('update', updateMarkup)
+reducer(bus, state)
 
 
+var el = list(state.tasks, state.done, addTask)
+
+
+function addTask () {
+    // add a new random number to our list 
+    bus.emit('new-task', document.getElementById('taskInput').value)
+    // construct a new list and efficiently diff+morph it into the one in the DOM 
+    
+    
+  }
 
 function addToDone(ev){
-    var id = ev.target.parentNode.id
-    var doneTask = tasks.splice(id, 1)
-    done.push(doneTask)
-    ev.target.parentNode.remove()
-    updateMarkup()
+    bus.emit('add-to-done', ev.target.parentNode.id)
+   // ev.target.parentNode.remove()
+    
 }
 
 
 function deleteTask(ev){
-    var id = ev.target.parentNode.id
-    done.splice(id, 1)
+    bus.emit('delete-task', ev.target.parentNode.id)
+    console.log(state.done)
     ev.target.parentNode.remove()
 }
 
@@ -50,17 +66,10 @@ function list (tasks, done, onclick) {
 }
 
  
-function update () {
-  // add a new random number to our list 
-  tasks.push(document.getElementById('taskInput').value)
-  document.getElementById('taskInput').value = ""
-  // construct a new list and efficiently diff+morph it into the one in the DOM 
-  updateMarkup()
-  
-}
 
 function updateMarkup(){
-    var newList = list(tasks, done, update)
+    var newList = list(state.tasks, state.done, addTask)
+    document.getElementById('taskInput').value = ""
     yo.update(el, newList)
 }
 
