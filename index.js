@@ -40,17 +40,23 @@ function deleteTask(ev){
 
 
 function makeList(items, onclick, flagButton){
-    var checkbox = yo`<input onclick=${onclick} type="checkbox">`
-    var button = yo`<button onclick=${onclick}>Delete</button>`
-    var element = checkbox;
+
     if(flagButton){
-        element = button;
-    }
-    return yo`<ul>
+        
+        return yo`<ul>
                 ${items.map(function (item, index) {
-                return yo`<li id=${index}>${item}${element}</li>`
+                return yo`<li id=${index}>${item}<button onclick=${onclick}>Delete</button></li>`
                 })}
               </ul>`
+    }
+    else{
+        return yo`<ul>
+                ${items.map(function (item, index) {
+                return yo`<li id=${index}>${item}<input onclick=${onclick} type="checkbox">`
+                })}
+              </ul>`
+    }
+    
 }
  
 function list (tasks, done, onclick) {
